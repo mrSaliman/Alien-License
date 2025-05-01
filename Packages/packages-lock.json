@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.scellecs.morpeh": {
+      "version": "https://github.com/scellecs/morpeh.git?path=Scellecs.Morpeh",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "e33105491fe0754d9cccb302dace3d8641681d29"
+    },
     "com.unity.adaptiveperformance": {
       "version": "4.0.1",
       "depth": 1,
