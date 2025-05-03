@@ -1,3 +1,4 @@
+using App.Scripts.Systems;
 using Scellecs.Morpeh;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
@@ -13,7 +14,10 @@ namespace App.Scripts.Components
     {
         public Vector2Int size;
         public MovementDirection direction;
-        public bool isBlocked;   
+        public bool isBlocked;
+        public Direction directionToMove;
+        public Vector2Int currentPosition;
+        public Vector2Int nextPosition;
     }
     
     public enum MovementDirection {

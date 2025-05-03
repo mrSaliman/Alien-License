@@ -13,7 +13,6 @@ namespace App.Scripts.Systems
     {
         public World World { get; set;}
         
-        private Filter _filter;
         private Stash<MovableComponent> _movableStash;
 
         private Vector2 _startTouchPosition;
@@ -22,7 +21,6 @@ namespace App.Scripts.Systems
 
         public void OnAwake() 
         {
-            _filter = World.Filter.With<MovableComponent>().Build();
             _movableStash = World.GetStash<MovableComponent>();
         }
 
@@ -32,11 +30,9 @@ namespace App.Scripts.Systems
             var touch = Input.GetTouch(0);
             switch (touch.phase) {
                 case TouchPhase.Began:
-                    // Запоминаем начальную позицию касания
                     _startTouchPosition = touch.position;
                     break;
                 case TouchPhase.Ended:
-                    // Вычисляем конечную позицию и направление свайпа
                     _endTouchPosition = touch.position;
                     ApplyInput(CalculateSwipeDirection(_startTouchPosition, _endTouchPosition));
                     break;
@@ -48,21 +44,28 @@ namespace App.Scripts.Systems
             var ray = Camera.main.ScreenPointToRay(_startTouchPosition);
             if (!Physics.Raycast(ray, out var hit)) return;
             var entity = hit.collider.GetComponent<EntityProvider>().Entity;
-                
-            if (_movableStash.Has(entity)) {
-                // entity moves to direction
+
+            if (!_movableStash.Has(entity)) return;
+            
+            ref var movableComponent = ref _movableStash.Get(entity);
+            if (movableComponent.isBlocked ||
+                (direction is Direction.Up or Direction.Down &&
+                 movableComponent.direction == MovementDirection.Horizontal) ||
+                (direction is Direction.Left or Direction.Right &&
+                 movableComponent.direction == MovementDirection.Vertical))
+            {
+                return;
             }
+
+            movableComponent.directionToMove = direction;
         }
 
         private static Direction CalculateSwipeDirection(Vector2 startTouchPosition, Vector2 endTouchPosition) {
             var delta = endTouchPosition - startTouchPosition;
             if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
             {
-                // Горизонтальное движение
                 return delta.x > 0 ? Direction.Right : Direction.Left;
             }
-
-            // Вертикальное движение
             return delta.y > 0 ? Direction.Up : Direction.Down;
         }
 
@@ -72,11 +75,12 @@ namespace App.Scripts.Systems
         }
     }
 
-    enum Direction
+    public enum Direction
     {
         Left,
         Right,
         Up,
-        Down
+        Down,
+        None
     }
 }
