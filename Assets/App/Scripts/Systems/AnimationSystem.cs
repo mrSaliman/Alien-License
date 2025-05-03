@@ -49,14 +49,21 @@ namespace App.Scripts.Systems
                     ref var animatedComponent = ref _animatedStash.Get(entity);
                     transformComponent.transform.DOMove(
                         new Vector3(nextWorldPosition.x, 0, nextWorldPosition.y),
-                        animatedComponent.animationTime);
+                        animatedComponent.animationTime).OnComplete(() => SyncPosition(entity));
                 }
                 else
                 {
                     transformComponent.transform.position = new Vector3(nextWorldPosition.x, 0,
                         nextWorldPosition.y);
+                    SyncPosition(entity);
                 }
             }
+        }
+
+        private void SyncPosition(Entity entity)
+        {
+            ref var movableComponent = ref _movableStash.Get(entity);
+            movableComponent.currentPosition = movableComponent.nextPosition;
         }
 
         public void Dispose()

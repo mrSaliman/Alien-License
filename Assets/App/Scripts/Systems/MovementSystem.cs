@@ -70,14 +70,14 @@ namespace App.Scripts.Systems
                 currentPosition -= movementVector * movableComponent.size;
                 movableComponent.nextPosition = currentPosition;
                     
-                FillOccupationGrid(movableComponent.currentPosition, movableComponent.size, false, levelData);
-                FillOccupationGrid(currentPosition, movableComponent.size, true, levelData);
+                FillOccupationGrid(movableComponent.currentPosition, movableComponent.size, false, ref levelData);
+                FillOccupationGrid(currentPosition, movableComponent.size, true, ref levelData);
 
                 movableComponent.directionToMove = Direction.None;
             }
         }
 
-        private static void FillOccupationGrid(Vector2Int start, Vector2Int size, bool value, LevelDataComponent levelData)
+        private static void FillOccupationGrid(Vector2Int start, Vector2Int size, bool value, ref LevelDataComponent levelData)
         {
             for (var i = start.x; i < start.x + size.x; i++)
             {
