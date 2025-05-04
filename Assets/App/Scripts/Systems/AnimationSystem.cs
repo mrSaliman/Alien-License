@@ -18,6 +18,7 @@ namespace App.Scripts.Systems
         private Stash<AnimatedComponent> _animatedStash;
         private Stash<LevelDataComponent> _levelStash;
         private Stash<MovableComponent> _movableStash;
+        private Stash<GridPositionComponent> _gridPosStash;
 
         public void OnAwake()
         {
@@ -26,6 +27,7 @@ namespace App.Scripts.Systems
             _transformStash = World.GetStash<TransformComponent>();
             _levelStash = World.GetStash<LevelDataComponent>();
             _movableStash = World.GetStash<MovableComponent>();
+            _gridPosStash = World.GetStash<GridPositionComponent>();
         }
 
         public void OnUpdate(float deltaTime) 
@@ -39,7 +41,8 @@ namespace App.Scripts.Systems
             foreach (var entity in _filter)
             {
                 ref var movableComponent = ref _movableStash.Get(entity);
-                if (movableComponent.currentPosition == movableComponent.nextPosition) continue;
+                ref var gridPos = ref _gridPosStash.Get(entity);
+                if (gridPos.position == movableComponent.nextPosition) continue;
 
                 ref var transformComponent = ref _transformStash.Get(entity);
                 var nextWorldPosition = movableComponent.nextPosition * levelData.cellSize;
@@ -63,7 +66,8 @@ namespace App.Scripts.Systems
         private void SyncPosition(Entity entity)
         {
             ref var movableComponent = ref _movableStash.Get(entity);
-            movableComponent.currentPosition = movableComponent.nextPosition;
+            ref var gridPos = ref _gridPosStash.Get(entity);
+            gridPos.position = movableComponent.nextPosition;
         }
 
         public void Dispose()

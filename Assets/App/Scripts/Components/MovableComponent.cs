@@ -16,7 +16,6 @@ namespace App.Scripts.Components
         public MovementDirection direction;
         public bool isBlocked;
         public Direction directionToMove;
-        public Vector2Int currentPosition;
         public Vector2Int nextPosition;
     }
     

@@ -16,6 +16,7 @@ namespace App.Scripts.Systems
 
         private Filter _filter;
         private Stash<MovableComponent> _movableStash;
+        private Stash<GridPositionComponent> _gridPosStash;
         private Stash<LevelDataComponent> _levelStash;
         private Dictionary<Direction, Vector2Int> _directionToVector;
         
@@ -25,6 +26,7 @@ namespace App.Scripts.Systems
             
             _filter = World.Filter.With<MovableComponent>().Build();
             _movableStash = World.GetStash<MovableComponent>();
+            _gridPosStash = World.GetStash<GridPositionComponent>();
             _levelStash = World.GetStash<LevelDataComponent>();
         }
         
@@ -58,11 +60,12 @@ namespace App.Scripts.Systems
             foreach (var entity in _filter)
             {
                 ref var movableComponent = ref _movableStash.Get(entity);
+                ref var gridPos = ref _gridPosStash.Get(entity);
                 if (movableComponent.directionToMove == Direction.None) continue;
-                if (movableComponent.currentPosition != movableComponent.nextPosition) continue;
+                if (gridPos.position != movableComponent.nextPosition) continue;
                 var movementVector = _directionToVector[movableComponent.directionToMove];
-                var currentPosition = movableComponent.currentPosition + movableComponent.size * movementVector;
-                while (!levelData.OccupationGrid[currentPosition.x][currentPosition.y])
+                var currentPosition = gridPos.position + movableComponent.size * movementVector;
+                while (!levelData.OccupationGrid[currentPosition.x, currentPosition.y])
                 {
                     currentPosition += movementVector;
                 }
@@ -70,7 +73,7 @@ namespace App.Scripts.Systems
                 currentPosition -= movementVector * movableComponent.size;
                 movableComponent.nextPosition = currentPosition;
                     
-                FillOccupationGrid(movableComponent.currentPosition, movableComponent.size, false, ref levelData);
+                FillOccupationGrid(gridPos.position, movableComponent.size, false, ref levelData);
                 FillOccupationGrid(currentPosition, movableComponent.size, true, ref levelData);
 
                 movableComponent.directionToMove = Direction.None;
@@ -83,7 +86,7 @@ namespace App.Scripts.Systems
             {
                 for (var j = start.y; j < start.y + size.y; j++)
                 {
-                    levelData.OccupationGrid[i][j] = value;
+                    levelData.OccupationGrid[i, j] = value;
                 }
             }
         }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using App.Scripts.GameField;
 using Scellecs.Morpeh;
 using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace App.Scripts.Components
 {
@@ -17,7 +19,7 @@ namespace App.Scripts.Components
         public List<MovableObjectData> movableObjects;
         public int characterObjectId;
         public List<Vector2Int> exitPositions;
-        public List<List<bool>> OccupationGrid;
+        public bool[,] OccupationGrid;
         public Vector2 cellSize;
     }
 
